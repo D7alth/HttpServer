@@ -67,7 +67,8 @@ func HandleUserHello(w http.ResponseWriter, req *http.Request) {
 func HandleUserHelloHeaders(w http.ResponseWriter, req *http.Request) {
 	user := req.Header.Get("user")
 	if user == "" {
-		user = "user"
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
 	}
 	var out bytes.Buffer
 	out.WriteString("Hello, ")
