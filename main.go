@@ -1,32 +1,34 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
 )
 
 func main() {
-	http.HandleFunc("/", hellowolrd)
-	http.HandleFunc("/goodbye", goodbye)
+	http.HandleFunc("/", HandleRoot)
+	http.HandleFunc("/goodbye", HandleGoodbye)
+	http.HandleFunc("/hello", HanldeParametrized)
 	log.Fatal(http.ListenAndServe(":8081", nil))
 }
 
-func hellowolrd(w http.ResponseWriter, request *http.Request) {
-	wc, err := w.Write([]byte("hello world!"))
+func HandleRoot(w http.ResponseWriter, request *http.Request) {
+	_, err := w.Write([]byte("Welcome to our webpage!\n"))
 	if err != nil {
 		slog.Error("An error ocurred written message", "err", err)
 		return
 	}
-	fmt.Println("bytes written:", wc)
 }
 
-func goodbye(w http.ResponseWriter, request *http.Request) {
-	wc, err := w.Write([]byte("goodbye!"))
+func HandleGoodbye(w http.ResponseWriter, _ *http.Request) {
+	_, err := w.Write([]byte("goodbye!\n"))
 	if err != nil {
 		slog.Error("An error ocurred written message", "err", err)
 		return
 	}
-	fmt.Print("bytes written:", wc)
+}
+
+func HanldeParametrized(w http.ResponseWriter, req *http.Request) {
+	http.Error(w, "not implmented yet\n", http.StatusNotImplemented)
 }
