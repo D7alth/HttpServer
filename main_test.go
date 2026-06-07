@@ -90,7 +90,7 @@ func TestHandleUserHello(t *testing.T) {
 		t.Errorf("Bad respose code, excpeted %v but was %v\n Body: %s",
 			desiredCode, w.Code, w.Body.String())
 	}
-	desiredBodyMessage := []byte("Hello, user!")
+	desiredBodyMessage := []byte("Hello, alberth!")
 	if !bytes.Equal(desiredBodyMessage, w.Body.Bytes()) {
 		t.Errorf("The message body does't seem correct, body: %s", w.Body.String())
 	}

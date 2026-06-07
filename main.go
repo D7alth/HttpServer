@@ -51,5 +51,14 @@ func HanldeParametrized(w http.ResponseWriter, req *http.Request) {
 }
 
 func HandleUserHello(w http.ResponseWriter, req *http.Request) {
-	http.Error(w, "not implemented yet", http.StatusNotImplemented)
+	userValuePath := req.PathValue("user")
+	var out bytes.Buffer
+	out.WriteString("Hello, ")
+	out.WriteString(userValuePath)
+	out.WriteString("!")
+	_, err := w.Write(out.Bytes())
+	if err != nil {
+		slog.Error(writtenErrorMessage, "err", err)
+		return
+	}
 }
