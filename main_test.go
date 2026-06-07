@@ -95,3 +95,19 @@ func TestHandleUserHello(t *testing.T) {
 		t.Errorf("The message body does't seem correct, body: %s", w.Body.String())
 	}
 }
+
+func TestHandleUserHelloHeadeers(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/responses/hello", nil)
+	req.Header.Set("user", "alberth")
+	w := httptest.NewRecorder()
+	HandleUserHello(w, req)
+	desiredCode := http.StatusOK
+	if w.Code != desiredCode {
+		t.Errorf("Bad respose code, excpeted %v but was %v\n Body: %s",
+			desiredCode, w.Code, w.Body.String())
+	}
+	desiredBodyMessage := []byte("Hello, alberth!")
+	if !bytes.Equal(desiredBodyMessage, w.Body.Bytes()) {
+		t.Errorf("The message body does't seem correct, body: %s", w.Body.String())
+	}
+}
