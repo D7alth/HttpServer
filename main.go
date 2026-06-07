@@ -10,7 +10,7 @@ import (
 var writtenErrorMessage string = "An error ocurred written message"
 
 func main() {
-	http.HandleFunc("/", HandleRoot)
+	http.HandleFunc("/{$}", HandleRoot)
 	http.HandleFunc("/goodbye", HandleGoodbye)
 	http.HandleFunc("/hello", HanldeParametrized)
 	http.HandleFunc("/responses/{user}/hello", HandleUserHello)
