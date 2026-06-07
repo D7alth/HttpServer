@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestHandleHwlloWorld(t *testing.T) {
+func TestHandleHelloWorld(t *testing.T) {
 	w := httptest.NewRecorder()
 	hellowolrd(w, nil)
 	desiredCode := http.StatusOK
