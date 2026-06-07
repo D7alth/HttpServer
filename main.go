@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"log"
 	"log/slog"
 	"net/http"
 )
+
+var writtenErrorMessage string = "An error ocurred written message"
 
 func main() {
 	http.HandleFunc("/", HandleRoot)
@@ -16,7 +19,7 @@ func main() {
 func HandleRoot(w http.ResponseWriter, request *http.Request) {
 	_, err := w.Write([]byte("Welcome to our webpage!\n"))
 	if err != nil {
-		slog.Error("An error ocurred written message", "err", err)
+		slog.Error(writtenErrorMessage, "err", err)
 		return
 	}
 }
@@ -24,11 +27,24 @@ func HandleRoot(w http.ResponseWriter, request *http.Request) {
 func HandleGoodbye(w http.ResponseWriter, _ *http.Request) {
 	_, err := w.Write([]byte("goodbye!\n"))
 	if err != nil {
-		slog.Error("An error ocurred written message", "err", err)
+		slog.Error(writtenErrorMessage, "err", err)
 		return
 	}
 }
 
 func HanldeParametrized(w http.ResponseWriter, req *http.Request) {
-	http.Error(w, "not implmented yet\n", http.StatusNotImplemented)
+	params := req.URL.Query()
+	userList, ok := params["user"]
+	if !ok {
+		userList = append(userList, "user")
+	}
+	var out bytes.Buffer
+	out.WriteString("Hello, ")
+	out.WriteString(userList[0])
+	out.WriteString("!")
+	_, err := w.Write(out.Bytes())
+	if err != nil {
+		slog.Error(writtenErrorMessage, "err", err)
+		return
+	}
 }
