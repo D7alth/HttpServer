@@ -12,11 +12,11 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8081", nil))
 }
 
-func hellowolrd(wirtter http.ResponseWriter, request *http.Request) {
-	out, err := wirtter.Write([]byte("hello world!"))
+func hellowolrd(w http.ResponseWriter, request *http.Request) {
+	wc, err := w.Write([]byte("hello world!"))
 	if err != nil {
 		slog.Error("An error ocurred written message", "err", err)
 		return
 	}
-	fmt.Println("bytes written:", out)
+	fmt.Println("bytes written:", wc)
 }
