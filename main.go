@@ -65,5 +65,17 @@ func HandleUserHello(w http.ResponseWriter, req *http.Request) {
 }
 
 func HandleUserHelloHeaders(w http.ResponseWriter, req *http.Request) {
-	http.Error(w, "not implmented yet", http.StatusNotImplemented)
+	user := req.Header.Get("user")
+	if user == "" {
+		user = "user"
+	}
+	var out bytes.Buffer
+	out.WriteString("Hello, ")
+	out.WriteString(user)
+	out.WriteString("!")
+	_, err := w.Write(out.Bytes())
+	if err != nil {
+		slog.Error(writtenErrorMessage, "err", err)
+		return
+	}
 }
