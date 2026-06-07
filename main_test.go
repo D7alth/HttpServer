@@ -202,3 +202,47 @@ func TestHandleUserHelloJson(t *testing.T) {
 		t.Errorf("The message body does't seem correct, body: %s", w.Body.String())
 	}
 }
+
+func TestHandleUserHelloJsonWithNoBody(t *testing.T) {
+	req := httptest.NewRequest(http.MethodPost, "/responses/hello/json", nil)
+
+	w := httptest.NewRecorder()
+
+	HandleUserHelloJson(w, req)
+
+	desiredCode := http.StatusBadRequest
+	if w.Code != desiredCode {
+		t.Errorf("Bad respose code, excpeted %v but was %v\n Body: %s",
+			desiredCode, w.Code, w.Body.String())
+	}
+
+	desiredBodyMessage := []byte("error to unmarshaling body request\n")
+	if !bytes.Equal(desiredBodyMessage, w.Body.Bytes()) {
+		t.Errorf("The message body does't seem correct, body: %s", w.Body.String())
+	}
+}
+
+func TestHandleUserHelloJsonWithInvalidUserName(t *testing.T) {
+	userData := UserData{}
+	marshalledRequestBody, err := json.Marshal(userData)
+	if err != nil {
+		t.Errorf("Cannot marshal object %s", err)
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/responses/hello/json", bytes.NewBuffer(marshalledRequestBody))
+
+	w := httptest.NewRecorder()
+
+	HandleUserHelloJson(w, req)
+
+	desiredCode := http.StatusBadRequest
+	if w.Code != desiredCode {
+		t.Errorf("Bad respose code, excpeted %v but was %v\n Body: %s",
+			desiredCode, w.Code, w.Body.String())
+	}
+
+	desiredBodyMessage := []byte("invalid user name\n")
+	if !bytes.Equal(desiredBodyMessage, w.Body.Bytes()) {
+		t.Errorf("The message body does't seem correct, body: %s", w.Body.String())
+	}
+}

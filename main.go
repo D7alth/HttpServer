@@ -67,13 +67,17 @@ func HandleUserHelloHeaders(w http.ResponseWriter, req *http.Request) {
 func HandleUserHelloJson(w http.ResponseWriter, req *http.Request) {
 	byteData, err := io.ReadAll(req.Body)
 	if err != nil {
-		http.Error(w, "error to reading body", http.StatusBadRequest)
+		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}
 	var userData UserData
 	err = json.Unmarshal(byteData, &userData)
 	if err != nil {
-		http.Error(w, "error unmarshiling request body", http.StatusBadRequest)
+		http.Error(w, "error to unmarshaling body request", http.StatusBadRequest)
+		return
+	}
+	if userData.Name == "" {
+		http.Error(w, "invalid user name", http.StatusBadRequest)
 		return
 	}
 	writeHelloUser(userData.Name, w, req)
