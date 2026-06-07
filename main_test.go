@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -172,6 +173,31 @@ func TestHandleUserHelloHeadersWithNoValidParameters(t *testing.T) {
 	}
 
 	desiredBodyMessage := []byte("bad request\n")
+	if !bytes.Equal(desiredBodyMessage, w.Body.Bytes()) {
+		t.Errorf("The message body does't seem correct, body: %s", w.Body.String())
+	}
+}
+
+func TestHandleUserHelloJson(t *testing.T) {
+	userData := UserData{Name: "alberth"}
+	marshalledRequestBody, err := json.Marshal(userData)
+	if err != nil {
+		t.Errorf("Cannot marshal object %s", err)
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/responses/hello/json", bytes.NewBuffer(marshalledRequestBody))
+
+	w := httptest.NewRecorder()
+
+	HandleUserHelloJson(w, req)
+
+	desiredCode := http.StatusOK
+	if w.Code != desiredCode {
+		t.Errorf("Bad respose code, excpeted %v but was %v\n Body: %s",
+			desiredCode, w.Code, w.Body.String())
+	}
+
+	desiredBodyMessage := []byte("Hello, alberth!")
 	if !bytes.Equal(desiredBodyMessage, w.Body.Bytes()) {
 		t.Errorf("The message body does't seem correct, body: %s", w.Body.String())
 	}

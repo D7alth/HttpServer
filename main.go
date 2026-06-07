@@ -2,10 +2,16 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
+	"io"
 	"log"
 	"log/slog"
 	"net/http"
 )
+
+type UserData struct {
+	Name string
+}
 
 var writtenErrorMessage string = "An error ocurred written message"
 
@@ -15,6 +21,7 @@ func main() {
 	http.HandleFunc("/hello", HanldeParametrized)
 	http.HandleFunc("/responses/{user}/hello", HandleUserHello)
 	http.HandleFunc("/responses/hello", HandleUserHelloHeaders)
+	http.HandleFunc("/responses/hello/json", HandleUserHelloHeaders)
 	log.Fatal(http.ListenAndServe(":8081", nil))
 }
 
@@ -40,28 +47,12 @@ func HanldeParametrized(w http.ResponseWriter, req *http.Request) {
 	if !ok {
 		userList = append(userList, "user")
 	}
-	var out bytes.Buffer
-	out.WriteString("Hello, ")
-	out.WriteString(userList[0])
-	out.WriteString("!")
-	_, err := w.Write(out.Bytes())
-	if err != nil {
-		slog.Error(writtenErrorMessage, "err", err)
-		return
-	}
+	writeHelloUser(userList[0], w, req)
 }
 
 func HandleUserHello(w http.ResponseWriter, req *http.Request) {
-	userValuePath := req.PathValue("user")
-	var out bytes.Buffer
-	out.WriteString("Hello, ")
-	out.WriteString(userValuePath)
-	out.WriteString("!")
-	_, err := w.Write(out.Bytes())
-	if err != nil {
-		slog.Error(writtenErrorMessage, "err", err)
-		return
-	}
+	user := req.PathValue("user")
+	writeHelloUser(user, w, req)
 }
 
 func HandleUserHelloHeaders(w http.ResponseWriter, req *http.Request) {
@@ -70,9 +61,28 @@ func HandleUserHelloHeaders(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}
+	writeHelloUser(user, w, req)
+}
+
+func HandleUserHelloJson(w http.ResponseWriter, req *http.Request) {
+	byteData, err := io.ReadAll(req.Body)
+	if err != nil {
+		http.Error(w, "error to reading body", http.StatusBadRequest)
+		return
+	}
+	var userData UserData
+	err = json.Unmarshal(byteData, &userData)
+	if err != nil {
+		http.Error(w, "error unmarshiling request body", http.StatusBadRequest)
+		return
+	}
+	writeHelloUser(userData.Name, w, req)
+}
+
+func writeHelloUser(username string, w http.ResponseWriter, _ *http.Request) {
 	var out bytes.Buffer
 	out.WriteString("Hello, ")
-	out.WriteString(user)
+	out.WriteString(username)
 	out.WriteString("!")
 	_, err := w.Write(out.Bytes())
 	if err != nil {
