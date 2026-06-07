@@ -79,3 +79,19 @@ func TestHandlerParametrizedWithNoValidParameters(t *testing.T) {
 		t.Errorf("The message body does't seem correct, body: %s", w.Body.String())
 	}
 }
+
+func TestHandleUserHello(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/responses/alberth/hello", nil)
+	req.SetPathValue("user", "alberth")
+	w := httptest.NewRecorder()
+	HandleUserHello(w, req)
+	desiredCode := http.StatusOK
+	if w.Code != desiredCode {
+		t.Errorf("Bad respose code, excpeted %v but was %v\n Body: %s",
+			desiredCode, w.Code, w.Body.String())
+	}
+	desiredBodyMessage := []byte("Hello, user!")
+	if !bytes.Equal(desiredBodyMessage, w.Body.Bytes()) {
+		t.Errorf("The message body does't seem correct, body: %s", w.Body.String())
+	}
+}

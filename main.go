@@ -13,6 +13,7 @@ func main() {
 	http.HandleFunc("/", HandleRoot)
 	http.HandleFunc("/goodbye", HandleGoodbye)
 	http.HandleFunc("/hello", HanldeParametrized)
+	http.HandleFunc("/responses/{user}/hello", HandleUserHello)
 	log.Fatal(http.ListenAndServe(":8081", nil))
 }
 
@@ -47,4 +48,8 @@ func HanldeParametrized(w http.ResponseWriter, req *http.Request) {
 		slog.Error(writtenErrorMessage, "err", err)
 		return
 	}
+}
+
+func HandleUserHello(w http.ResponseWriter, req *http.Request) {
+	http.Error(w, "not implemented yet", http.StatusNotImplemented)
 }
